@@ -6,7 +6,9 @@ import com.taskmanager.taskmanager.dto.request.SignupRequestDto;
 import com.taskmanager.taskmanager.dto.response.JwtAuthenticationResponse;
 import com.taskmanager.taskmanager.dto.response.SignupResponse;
 import com.taskmanager.taskmanager.services.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,15 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class AuthController {
     private final AuthenticationService authenticationService;
-
-
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> singUp(@RequestBody SignupRequestDto request) {
+    public ResponseEntity<SignupResponse> singUp(@RequestBody @Valid SignupRequestDto request) {
         return new ResponseEntity<>(authenticationService.signup(request), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         return new ResponseEntity<>(authenticationService.login(loginRequestDto), HttpStatus.OK);
     }
 }

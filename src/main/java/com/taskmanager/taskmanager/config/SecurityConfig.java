@@ -69,7 +69,7 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(new JwtFilter(jwtService, userDetailsService, authenticationManager), ExceptionTranslationFilter.class)
-//                .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
+                .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
                 .authenticationProvider(daoAuthenticationProvider())
                 .build();
     }
