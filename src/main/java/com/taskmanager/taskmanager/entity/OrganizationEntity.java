@@ -1,7 +1,10 @@
 package com.taskmanager.taskmanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -13,16 +16,20 @@ import lombok.*;
 @Builder
 public class OrganizationEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column(name = "name", nullable = false)
     String name;
 
+    @Column(name = "org_unique_name", nullable = false, length = 25)
+    @Pattern(regexp = "^\\S*$")
+    String orgId;
+
     @Column(name = "description")
     String description;
 
-    @Column(name = "is_deleted")
-    Boolean is_deleted = false;
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    Set<BoardEntity> boards;
 }
