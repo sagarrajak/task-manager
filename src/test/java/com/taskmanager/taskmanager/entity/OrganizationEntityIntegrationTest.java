@@ -23,7 +23,7 @@ class OrganizationEntityIntegrationTest {
     @BeforeEach
     void setup() {
         organization = new OrganizationEntity();
-        organization.setName("Test org");
+        organization.setName("Testorg");
         organization.setDescription("This is fake org");
         organization.setOrgId("testOrg");
     }

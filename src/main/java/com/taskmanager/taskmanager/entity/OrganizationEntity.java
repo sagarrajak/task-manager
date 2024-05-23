@@ -30,6 +30,9 @@ public class OrganizationEntity extends BaseEntity {
     @Column(name = "description")
     String description;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     Set<BoardEntity> boards;
+
+    @OneToMany(mappedBy = "organization" , cascade = CascadeType.ALL)
+    Set<StepsEntity> steps;
 }

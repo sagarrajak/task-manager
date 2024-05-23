@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.util.Set;
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "board")
@@ -29,6 +31,14 @@ public class BoardEntity extends BaseEntity {
     String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
+    @JoinColumn(name = "organization_id", nullable = false)
     private OrganizationEntity organization;
+
+
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "board"
+    )
+    private Set<TaskEntity> tasks;
 }
