@@ -7,14 +7,13 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "tasks_steps")
+@Table(name = "steps")
 @ToString
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StepsEntity extends  BaseEntity {
-
+public class StepsEntity extends BaseEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +31,10 @@ public class StepsEntity extends  BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "org_id", nullable = false)
     OrganizationEntity organization;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "board_id", nullable = false)
+    BoardEntity boardId;
 
     @Column(name = "task_order", nullable = false)
     Integer order;

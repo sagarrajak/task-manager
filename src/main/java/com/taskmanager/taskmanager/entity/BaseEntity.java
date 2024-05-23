@@ -11,7 +11,6 @@ import java.util.Date;
 
 @Data
 @ToString
-@MappedSuperclass
 public class BaseEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

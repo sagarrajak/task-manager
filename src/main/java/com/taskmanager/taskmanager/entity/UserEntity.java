@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity()
@@ -65,4 +66,8 @@ public class UserEntity extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return !disabled;
     }
+
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "updatedBy")
+    Set<HistoryEntity> updates;
 }

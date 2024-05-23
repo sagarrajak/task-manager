@@ -23,7 +23,7 @@ public class OrganizationEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "org_unique_name", nullable = false, length = 25)
+    @Column(name = "org_unique_name", nullable = false, length = 25, unique = true)
     @Pattern(regexp = "^\\S*$")
     String orgId;
 

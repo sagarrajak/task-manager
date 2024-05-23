@@ -15,6 +15,11 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class BoardEntity extends BaseEntity {
+    @Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
     @Column(name = "boardUniqueId", nullable = false, unique = true, length = 25)
     @Pattern(regexp = "^\\S*$")
     String boardUniqueId;
@@ -22,10 +27,7 @@ public class BoardEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     String name;
 
-    @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+
 
     @Column(name = "description")
     String description;
@@ -41,4 +43,12 @@ public class BoardEntity extends BaseEntity {
             mappedBy = "board"
     )
     private Set<TaskEntity> tasks;
+
+
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "boardId"
+    )
+    private Set<StepsEntity> boards;
 }

@@ -8,7 +8,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "task")
+@Table(name = "comments")
 @ToString
 @Data
 @NoArgsConstructor
@@ -34,5 +34,5 @@ public class CommentsEntity extends BaseEntity {
             cascade = CascadeType.ALL,
             mappedBy = "parentComment"
     )
-    Set<CommentsEntity> commentsEntity;
+    Set<ReplyEntity> replies;
 }

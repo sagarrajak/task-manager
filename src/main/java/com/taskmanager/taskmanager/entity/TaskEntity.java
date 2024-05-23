@@ -8,7 +8,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "task")
+@Table(name = "tasks")
 @ToString
 @Data
 @NoArgsConstructor
@@ -26,6 +26,10 @@ public class TaskEntity extends BaseEntity {
     @Column(name = "description", length = 1000, nullable = false)
     String description;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "step_id", nullable = false)
+    StepsEntity steps;
+
     @Column(name = "story_point")
     float storyPoint;
 
@@ -38,15 +42,9 @@ public class TaskEntity extends BaseEntity {
     @Column(name="is_story")
     boolean isStory = false;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
+    @JoinColumn(name = "board_id", nullable = false)
     BoardEntity board;
-
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "step_id")
-    StepsEntity steps;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "parent_task")
@@ -54,4 +52,7 @@ public class TaskEntity extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "task")
     Set<CommentsEntity> comments;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "task")
+    Set<HistoryEntity> history;
 }
