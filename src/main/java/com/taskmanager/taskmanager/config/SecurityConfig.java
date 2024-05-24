@@ -1,7 +1,9 @@
 package com.taskmanager.taskmanager.config;
 
 import com.taskmanager.taskmanager.repository.UserRepository;
-import com.taskmanager.taskmanager.services.UserDetailsServiceImpl;
+import com.taskmanager.taskmanager.services.OrganizationService;
+import com.taskmanager.taskmanager.services.impl.UserDetailsServiceImpl;
+import com.taskmanager.taskmanager.utill.RequestContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +21,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
@@ -32,7 +32,8 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
     private final FilterChainExceptionHandler filterChainExceptionHandler;
-
+    private final OrganizationService organizationService;
+    private final RequestContextHolder contextHolder;
 
     @Bean
     UserDetailsService getUserDetailsService() {
@@ -52,6 +53,7 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final AuthenticationManager authenticationManager = new ProviderManager(daoAuthenticationProvider());
@@ -69,6 +71,7 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(new JwtFilter(jwtService, userDetailsService, authenticationManager), ExceptionTranslationFilter.class)
+                .addFilterBefore(new OrganizationFilter(contextHolder, organizationService), ExceptionTranslationFilter.class)
                 .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
                 .authenticationProvider(daoAuthenticationProvider())
                 .build();
@@ -79,6 +82,8 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
+
+
 
 
 }

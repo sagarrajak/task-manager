@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import javax.swing.text.html.HTML;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -30,9 +31,21 @@ public class OrganizationEntity extends BaseEntity {
     @Column(name = "description")
     String description;
 
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<BoardEntity> boards;
 
-    @OneToMany(mappedBy = "organization" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "organization" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<StepsEntity> steps;
+
+    @OneToMany(mappedBy = "organization" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<TagsEntity> tags;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "organization_user",
+            joinColumns = @JoinColumn(name = "org_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    Set<UserEntity> users;
+
 }

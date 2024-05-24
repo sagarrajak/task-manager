@@ -1,4 +1,4 @@
-package com.taskmanager.taskmanager.services;
+package com.taskmanager.taskmanager.services.impl;
 
 import com.taskmanager.taskmanager.config.JwtService;
 import com.taskmanager.taskmanager.dto.request.LoginRequestDto;
