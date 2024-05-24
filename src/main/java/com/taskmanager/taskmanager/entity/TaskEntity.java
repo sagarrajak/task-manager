@@ -42,6 +42,17 @@ public class TaskEntity extends BaseEntity {
     @Column(name="is_story")
     boolean isStory = false;
 
+    @ManyToMany(
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
+    )
+    @JoinTable(
+            name = "tasks_tags",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    Set<TagsEntity> tags;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     BoardEntity board;
