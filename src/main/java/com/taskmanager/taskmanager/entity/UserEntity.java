@@ -72,5 +72,5 @@ public class UserEntity extends BaseEntity implements UserDetails {
     Set<HistoryEntity> updates;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "users")
-    Set<UserEntity> users;
+    Set<OrganizationEntity> orgs;
 }

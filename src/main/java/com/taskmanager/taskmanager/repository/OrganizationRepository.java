@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface OrganizationRepository extends
-        JpaRepository<OrganizationEntity, Long>,
-        QuerydslPredicateExecutor<OrganizationRepository> {
+        JpaRepository<OrganizationEntity, Long>{
     Optional<OrganizationEntity> findOneByOrgId(String orgId);
 }
