@@ -1,5 +1,6 @@
 package com.taskmanager.taskmanager.config;
 
+import com.taskmanager.taskmanager.config.intercepter.OrganizationInterceptor;
 import com.taskmanager.taskmanager.repository.UserRepository;
 import com.taskmanager.taskmanager.services.OrganizationService;
 import com.taskmanager.taskmanager.services.impl.UserDetailsServiceImpl;
@@ -22,11 +23,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
@@ -34,6 +38,7 @@ public class SecurityConfig {
     private final FilterChainExceptionHandler filterChainExceptionHandler;
     private final OrganizationService organizationService;
     private final RequestContextHolder contextHolder;
+    private final OrganizationInterceptor organizationInterceptor;
 
     @Bean
     UserDetailsService getUserDetailsService() {
@@ -53,6 +58,10 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(organizationInterceptor);
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

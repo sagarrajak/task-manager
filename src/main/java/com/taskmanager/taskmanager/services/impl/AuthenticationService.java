@@ -36,7 +36,7 @@ public class AuthenticationService {
     }
 
     public JwtAuthenticationResponse login(LoginRequestDto dto) {
-        var user = this.userRepository.findByEmail(dto.getUsername()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password!"));
+        var user = this.userRepository.findByEmailIgnoreCase(dto.getUsername()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password!"));
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, dto.getPassword()));
         var jwt = jwtService.generateToken(user.getUsername());
         return JwtAuthenticationResponse.builder().token(jwt).build();

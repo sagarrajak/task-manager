@@ -42,7 +42,7 @@ class OrganizationEntityIntegrationTest {
     @DisplayName("This will not able to save organization")
     @ParameterizedTest()
     @ValueSource(strings = {"test org, test_org, test&_donkey_org", "test &&y874y3"})
-    void testOrganizationUniqueNameContrain(String name) {
+    void testOrganizationUniqueNameContains(String name) {
         organization.setOrgId(name);
         Assertions.assertThrows(ConstraintViolationException.class, () -> {
             entityManager.persistAndFlush(organization);

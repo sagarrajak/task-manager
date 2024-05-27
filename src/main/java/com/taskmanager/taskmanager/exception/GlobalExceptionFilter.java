@@ -9,6 +9,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionFilter {
+
+    @ExceptionHandler(OrganizationException.class)
+    public ResponseEntity<ErrorResponse> handleOrganizationServiceException(OrganizationException e) {
+        ErrorResponse message = ErrorResponse
+                .builder()
+                .status(e.getCode())
+                .message(e.getMessage())
+                .build();
+        return new ResponseEntity<>(message, e.getCode());
+    }
+
+
+    @ExceptionHandler(AuthenticationException.class)
     private ResponseEntity<ErrorResponse> handleExceptionAuthenticationException(AuthenticationException ex) {
         ErrorResponse message = ErrorResponse
                 .builder()

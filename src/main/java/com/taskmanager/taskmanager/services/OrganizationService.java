@@ -9,16 +9,20 @@ import com.taskmanager.taskmanager.entity.OrganizationEntity;
 import com.taskmanager.taskmanager.entity.StepsEntity;
 import com.taskmanager.taskmanager.entity.TagsEntity;
 import com.taskmanager.taskmanager.entity.UserEntity;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface OrganizationService {
-    public void createOrganization(CrateOrganizationRequestDto requestDto);
+    public OrganizationEntity createOrganization(CrateOrganizationRequestDto requestDto);
 
     public Optional<OrganizationEntity> checkIfOrganizationExist(String nameOfOrg);
 
     public boolean addUserToOrganization(String email);
+
+    @Transactional()
+    boolean addUserToOrganization(String email, OrganizationEntity organization);
 
     public boolean removeUserFromOrganization(OrganizationEntity organization);
 

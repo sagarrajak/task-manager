@@ -49,7 +49,7 @@ class BoardEntityIntegrationTest {
         assertEquals(boardEntity.getName(), board.getName());
         assertEquals(boardEntity.getBoardUniqueId(), board.getBoardUniqueId());
         assertEquals(boardEntity.getDescription(), board.getDescription());
-        assertTrue(boardEntity.getUpdated_at().isBefore(LocalDateTime.now()));
+        assertTrue(boardEntity.getCreated_at().isBefore(LocalDateTime.now()));
         assertNotNull(boardEntity.getOrganization());
         System.out.println(boardEntity);
     }

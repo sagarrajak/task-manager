@@ -71,6 +71,6 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "updatedBy")
     Set<HistoryEntity> updates;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "users")
-    Set<OrganizationEntity> orgs;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    Set<UserOrganizationTable> userOrganization;
 }
