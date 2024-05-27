@@ -1,18 +1,18 @@
 package com.taskmanager.taskmanager.services.impl;
 
+import com.taskmanager.taskmanager.annotation.RequireOrganizationMethod;
 import com.taskmanager.taskmanager.dto.mapstruct.OrganizationMapper;
 import com.taskmanager.taskmanager.dto.request.CrateOrganizationRequestDto;
 import com.taskmanager.taskmanager.dto.request.StepsCrationRequest;
 import com.taskmanager.taskmanager.dto.response.StepsCrationResponse;
 import com.taskmanager.taskmanager.dto.response.TagCreationRequest;
 import com.taskmanager.taskmanager.dto.response.TagCreationResponse;
-import com.taskmanager.taskmanager.entity.OrganizationEntity;
-import com.taskmanager.taskmanager.entity.StepsEntity;
-import com.taskmanager.taskmanager.entity.TagsEntity;
-import com.taskmanager.taskmanager.entity.UserEntity;
+import com.taskmanager.taskmanager.entity.*;
 import com.taskmanager.taskmanager.exception.OrganizationException;
 import com.taskmanager.taskmanager.repository.OrganizationRepository;
+import com.taskmanager.taskmanager.repository.UserOrganizationTableRepository;
 import com.taskmanager.taskmanager.services.OrganizationService;
+import com.taskmanager.taskmanager.utill.RequestContextHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +24,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class OrganizationServiceImpl implements OrganizationService {
-
     private final OrganizationRepository organizationRepository;
+    private final UserOrganizationTableRepository userOrganizationTableRepository;
+    private final RequestContextHolder contextHolder;
+    private final AuthenticationService authenticationService;
 
     @Override
     @Transactional()
@@ -47,13 +49,30 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
+    @Transactional
+    @RequireOrganizationMethod()
     public boolean addUserToOrganization(String email) {
-        return false;
+        OrganizationEntity organization = (OrganizationEntity) contextHolder.get("organization");
+        boolean isUserAlreadyExist = this.userOrganizationTableRepository.checkIfUserAlreadyExistInOrg(
+                organization.getOrgId(), authenticationService.getCurrentLoginUser().getEmail());
+        if (!isUserAlreadyExist) {
+           return this.addUserToOrganization(authenticationService.getCurrentLoginUser(), organization);
+        }
+        throw new OrganizationException("User already added in organization!", HttpStatus.BAD_REQUEST);
     }
 
     @Override
     @Transactional()
     public boolean addUserToOrganization(String email, OrganizationEntity organization) {
+        return false;
+    }
+
+    @Override
+    @Transactional()
+    public boolean addUserToOrganization(UserEntity user, OrganizationEntity organization) {
+        UserOrganizationTable userOrganizationTable = new UserOrganizationTable();
+        userOrganizationTable.setOrganization(organization);
+        userOrganizationTable.setUser(user);
         return false;
     }
 
@@ -64,31 +83,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public boolean checkIfUserHaveAccessToThisOrganization(UserEntity currentUser, OrganizationEntity currentOrganization) {
-        return false;
-    }
-
-    @Override
-    public TagCreationResponse addExistingTagToTheOrganization(TagCreationRequest tagCreationRequest) {
-        return null;
-    }
-
-    @Override
-    public boolean deleteATagFromTheOrganization(TagsEntity tag) {
-        return false;
-    }
-
-    @Override
-    public StepsCrationResponse addStepsInTheOrganization(List<StepsCrationRequest> stepsCreationRequests) {
-        return null;
-    }
-
-    @Override
-    public StepsCrationResponse addStepsInTheOrganization(StepsCrationRequest stepsCreationRequests) {
-        return null;
-    }
-
-    @Override
-    public boolean removeAStepFromOrganization(StepsEntity step) {
         return false;
     }
 }

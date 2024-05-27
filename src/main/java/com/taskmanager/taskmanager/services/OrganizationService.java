@@ -24,17 +24,10 @@ public interface OrganizationService {
     @Transactional()
     boolean addUserToOrganization(String email, OrganizationEntity organization);
 
+    @Transactional()
+    boolean addUserToOrganization(UserEntity user, OrganizationEntity organization);
+
     public boolean removeUserFromOrganization(OrganizationEntity organization);
 
     public boolean checkIfUserHaveAccessToThisOrganization(UserEntity currentUser, OrganizationEntity currentOrganization);
-
-    public TagCreationResponse addExistingTagToTheOrganization(TagCreationRequest tagCreationRequest);
-
-    public boolean deleteATagFromTheOrganization(TagsEntity tag);
-
-    public StepsCrationResponse addStepsInTheOrganization(List<StepsCrationRequest> stepsCreationRequests);
-
-    public StepsCrationResponse addStepsInTheOrganization(StepsCrationRequest stepsCreationRequests);
-
-    public boolean removeAStepFromOrganization(StepsEntity step);
 }

@@ -59,4 +59,15 @@ class OrganizationRepositoryTest {
                 Assertions.assertTrue(oneByOrgId.isPresent(), "It shoud return true");
                 Assertions.assertEquals(oneByOrgId.get().getOrgId(), this.organization.getOrgId(), "Org id must be equal");
         }
+
+        @DisplayName("Check if same name organization exist")
+        @Test
+        void checkIfSameNameOrganizationExist() {
+                var test1 = this.repositoryToTest.isThereOrganizationWithSameName(organization.getOrgId());
+                var test2 = this.repositoryToTest.isThereOrganizationWithSameName(organization2.getOrgId());
+                var test3 = this.repositoryToTest.isThereOrganizationWithSameName(organization3.getOrgId());
+                assertTrue(test1);
+                assertTrue(test2);
+                assertTrue(test3);
+        }
 }

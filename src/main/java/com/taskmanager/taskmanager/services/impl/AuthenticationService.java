@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,5 +41,9 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, dto.getPassword()));
         var jwt = jwtService.generateToken(user.getUsername());
         return JwtAuthenticationResponse.builder().token(jwt).build();
+    }
+
+    public UserEntity getCurrentLoginUser() {
+        return  (UserEntity)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
