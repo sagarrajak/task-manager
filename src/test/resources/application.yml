@@ -10,3 +10,25 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+    defer-datasource-initialization: true
+
+jwt:
+  secret: "dsfknfdslkndslfndsfdsfmfdsnmfdsnfdsnmfdsmdsfnm"
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          jpa:
+            repository: DEBUG
+        web:
+          client:
+            RestTemplate: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+

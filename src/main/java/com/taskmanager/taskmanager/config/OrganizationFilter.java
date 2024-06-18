@@ -32,7 +32,7 @@ public class OrganizationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         Optional<String> header = Optional.ofNullable(request.getHeader("x-organization"));
         if (header.isPresent()) {
-            String  organizationKey = header.get();
+            String organizationKey = header.get();
             Optional<OrganizationEntity> organizationEntity = this.organizationService.checkIfOrganizationExist(organizationKey);
             organizationEntity.ifPresent(organization -> contextHolder.set("organization", organization));
         }

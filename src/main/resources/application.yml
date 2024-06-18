@@ -20,3 +20,18 @@ spring:
 
 jwt:
   secret: "dsfknfdslkndslfndsfdsfmfdsnmfdsnfdsnmfdsmdsfnm"
+
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          jpa:
+            repository: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

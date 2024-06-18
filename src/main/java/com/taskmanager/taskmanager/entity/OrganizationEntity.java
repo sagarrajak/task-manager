@@ -24,6 +24,10 @@ public class OrganizationEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     String name;
 
+    public void setOrgId(String orgId) {
+        this.orgId = orgId.toLowerCase();
+    }
+
     @Column(name = "org_unique_name", nullable = false, length = 25, unique = true)
     @Pattern(regexp = "^\\S*$")
     String orgId;
@@ -40,12 +44,8 @@ public class OrganizationEntity extends BaseEntity {
     @OneToMany(mappedBy = "organization" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<TagsEntity> tags;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "organization_user",
-            joinColumns = @JoinColumn(name = "org_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    Set<UserEntity> users;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "organization")
+    Set<UserOrganizationTable> userOrganization;
+
 
 }

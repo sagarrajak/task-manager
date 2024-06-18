@@ -1,10 +1,13 @@
 package com.taskmanager.taskmanager.config;
 
+import com.taskmanager.taskmanager.config.intercepter.OrganizationInterceptor;
 import com.taskmanager.taskmanager.repository.UserRepository;
 import com.taskmanager.taskmanager.services.OrganizationService;
 import com.taskmanager.taskmanager.services.impl.UserDetailsServiceImpl;
 import com.taskmanager.taskmanager.utill.RequestContextHolder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,18 +25,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final FilterChainExceptionHandler filterChainExceptionHandler;
+//    private final FilterChainExceptionHandler filterChainExceptionHandler;
     private final OrganizationService organizationService;
     private final RequestContextHolder contextHolder;
+    private final OrganizationInterceptor organizationInterceptor;
+
 
     @Bean
     UserDetailsService getUserDetailsService() {
@@ -53,6 +62,10 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(organizationInterceptor);
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -72,7 +85,7 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(new JwtFilter(jwtService, userDetailsService, authenticationManager), ExceptionTranslationFilter.class)
                 .addFilterBefore(new OrganizationFilter(contextHolder, organizationService), ExceptionTranslationFilter.class)
-                .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
+//                .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
                 .authenticationProvider(daoAuthenticationProvider())
                 .build();
     }

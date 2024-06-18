@@ -16,4 +16,13 @@ public class RoleEntity extends BaseEntity {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(name = "name", nullable = false)
+    String name;
+
+    @Column(name = "description", nullable = false)
+    String description;
+
+    @Column(name = "code", nullable = false, length = 10, unique = true)
+    String code;
 }
