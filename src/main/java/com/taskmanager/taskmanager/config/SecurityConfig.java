@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -32,16 +33,34 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity(debug = true)
-@RequiredArgsConstructor
 public class SecurityConfig implements WebMvcConfigurer {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
-//    private final FilterChainExceptionHandler filterChainExceptionHandler;
+    private final FilterChainExceptionHandler filterChainExceptionHandler;
     private final OrganizationService organizationService;
     private final RequestContextHolder contextHolder;
     private final OrganizationInterceptor organizationInterceptor;
+
+    public SecurityConfig(
+        UserRepository userRepository,
+        JwtService jwtService,
+        UserDetailsServiceImpl userDetailsService,
+        @Lazy()
+        FilterChainExceptionHandler filterChainExceptionHandler,
+        OrganizationService organizationService,
+        RequestContextHolder contextHolder,
+        OrganizationInterceptor organizationInterceptor
+    ) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+        this.filterChainExceptionHandler = filterChainExceptionHandler;
+        this.organizationService = organizationService;
+        this.contextHolder = contextHolder;
+        this.organizationInterceptor = organizationInterceptor;
+    }
 
 
     @Bean
@@ -85,7 +104,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 )
                 .addFilterBefore(new JwtFilter(jwtService, userDetailsService, authenticationManager), ExceptionTranslationFilter.class)
                 .addFilterBefore(new OrganizationFilter(contextHolder, organizationService), ExceptionTranslationFilter.class)
-//                .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
+                .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
                 .authenticationProvider(daoAuthenticationProvider())
                 .build();
     }

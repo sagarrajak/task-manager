@@ -2,25 +2,25 @@ package com.taskmanager.taskmanager.services.impl;
 
 import com.taskmanager.taskmanager.annotation.RequireOrganizationMethod;
 import com.taskmanager.taskmanager.dto.mapstruct.OrganizationMapper;
+import com.taskmanager.taskmanager.dto.mapstruct.UserMapper;
 import com.taskmanager.taskmanager.dto.request.CrateOrganizationRequestDto;
-import com.taskmanager.taskmanager.dto.request.StepsCrationRequest;
-import com.taskmanager.taskmanager.dto.response.StepsCrationResponse;
-import com.taskmanager.taskmanager.dto.response.TagCreationRequest;
-import com.taskmanager.taskmanager.dto.response.TagCreationResponse;
+import com.taskmanager.taskmanager.dto.response.organization.OrganizationDetailsResponseDto;
+import com.taskmanager.taskmanager.dto.response.users.UserResponse;
 import com.taskmanager.taskmanager.entity.*;
 import com.taskmanager.taskmanager.exception.OrganizationException;
 import com.taskmanager.taskmanager.repository.OrganizationRepository;
 import com.taskmanager.taskmanager.repository.UserOrganizationTableRepository;
 import com.taskmanager.taskmanager.services.OrganizationService;
 import com.taskmanager.taskmanager.utill.RequestContextHolder;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -28,29 +28,30 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final UserOrganizationTableRepository userOrganizationTableRepository;
     private final RequestContextHolder contextHolder;
     private final AuthenticationService authenticationService;
+    private final EntityManager entityManager;
 
     public OrganizationServiceImpl(
             OrganizationRepository organizationRepository,
             UserOrganizationTableRepository userOrganizationTableRepository,
             RequestContextHolder contextHolder,
-            @Lazy AuthenticationService authenticationService
+            @Lazy AuthenticationService authenticationService,
+            EntityManager entityManager
     ) {
         this.organizationRepository = organizationRepository;
         this.userOrganizationTableRepository = userOrganizationTableRepository;
         this.contextHolder = contextHolder;
         this.authenticationService = authenticationService;
+        this.entityManager = entityManager;
     }
 
     @Override
-    @Transactional()
+    @Transactional(rollbackOn = Exception.class)
     public OrganizationEntity createOrganization(CrateOrganizationRequestDto requestDto) {
         if (this.checkIfOrganizationExist(requestDto.getUniqueName()).isEmpty()) {
             OrganizationEntity organizationEntity = OrganizationMapper.INSTANCE.crateOrganizationRequestDtoToOrganization(requestDto);
-            try {
-                return organizationRepository.save(organizationEntity);
-            } catch (Exception e) {
-                throw new OrganizationException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            OrganizationEntity savedOrganization = organizationRepository.save(organizationEntity);
+            this.addSelfToOrganizationAsAdmin(organizationEntity);
+            return savedOrganization;
         }
         throw new OrganizationException("Organization with same unique name exist, try another name!", HttpStatus.BAD_REQUEST);
     }
@@ -75,16 +76,17 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional()
-    public boolean addUserToOrganization(String email, OrganizationEntity organization) {
-        return false;
+    public boolean addUserToOrganization(UserEntity user, OrganizationEntity organization) {
+        UserOrganizationTable userOrganizationTable = new UserOrganizationTable();
+        userOrganizationTable.setOrganization(entityManager.merge(organization));
+        userOrganizationTable.setUser(entityManager.merge(user));
+        this.userOrganizationTableRepository.save(userOrganizationTable);
+        return true;
     }
 
     @Override
     @Transactional()
-    public boolean addUserToOrganization(UserEntity user, OrganizationEntity organization) {
-        UserOrganizationTable userOrganizationTable = new UserOrganizationTable();
-        userOrganizationTable.setOrganization(organization);
-        userOrganizationTable.setUser(user);
+    public boolean addUserToOrganization(String email, OrganizationEntity organization) {
         return false;
     }
 
@@ -100,6 +102,25 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public boolean addSelfToOrganizationAsAdmin(OrganizationEntity organization) {
-        return false;
+        UserEntity currentLoginUser = this.authenticationService.getCurrentLoginUser();
+        return addUserToOrganization(currentLoginUser, organization);
+    }
+
+    @Override
+    public OrganizationDetailsResponseDto getAllDetailsOfOrganization(String organizationId) {
+        if (!this.organizationRepository.isThereOrganizationWithSameName(organizationId))
+            throw new OrganizationException("Organization not found!", HttpStatus.NOT_FOUND);
+        OrganizationEntity organization =
+                this.organizationRepository.findOneByOrgIdIgnoreCase(organizationId).get();
+        List<UserEntity> userOfGivenOrg = this.userOrganizationTableRepository.findUserOfGivenOrg(organizationId);
+        List<UserResponse> userResponsesDto = userOfGivenOrg.stream().map(UserMapper.INSTANCE::userToUserResponse).collect(Collectors.toList());
+        System.out.println(1);
+        return OrganizationDetailsResponseDto
+                .builder()
+                .orgId(organization.getOrgId())
+                .users(userResponsesDto)
+                .description(organization.getDescription())
+                .name(organization.getName())
+                .build();
     }
 }

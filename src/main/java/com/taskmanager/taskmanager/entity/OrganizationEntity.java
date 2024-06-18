@@ -46,6 +46,4 @@ public class OrganizationEntity extends BaseEntity {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "organization")
     Set<UserOrganizationTable> userOrganization;
-
-
 }

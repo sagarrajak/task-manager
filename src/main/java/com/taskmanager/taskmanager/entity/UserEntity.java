@@ -1,5 +1,6 @@
 package com.taskmanager.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -67,7 +68,7 @@ public class UserEntity extends BaseEntity implements UserDetails {
         return !disabled;
     }
 
-
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "updatedBy")
     Set<HistoryEntity> updates;
 

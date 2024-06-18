@@ -1,17 +1,11 @@
 package com.taskmanager.taskmanager.services;
 
 import com.taskmanager.taskmanager.dto.request.CrateOrganizationRequestDto;
-import com.taskmanager.taskmanager.dto.request.StepsCrationRequest;
-import com.taskmanager.taskmanager.dto.response.StepsCrationResponse;
-import com.taskmanager.taskmanager.dto.response.TagCreationRequest;
-import com.taskmanager.taskmanager.dto.response.TagCreationResponse;
+import com.taskmanager.taskmanager.dto.response.organization.OrganizationDetailsResponseDto;
 import com.taskmanager.taskmanager.entity.OrganizationEntity;
-import com.taskmanager.taskmanager.entity.StepsEntity;
-import com.taskmanager.taskmanager.entity.TagsEntity;
 import com.taskmanager.taskmanager.entity.UserEntity;
 import jakarta.transaction.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface OrganizationService {
@@ -32,4 +26,6 @@ public interface OrganizationService {
     public boolean checkIfUserHaveAccessToThisOrganization(UserEntity currentUser, OrganizationEntity currentOrganization);
 
     public boolean addSelfToOrganizationAsAdmin(OrganizationEntity organization);
+
+    public OrganizationDetailsResponseDto getAllDetailsOfOrganization(String organizationId);
 }

@@ -15,7 +15,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
-//@Component
+@Component
 public class FilterChainExceptionHandler extends OncePerRequestFilter {
         private final Logger log = LoggerFactory.getLogger(getClass());
 
