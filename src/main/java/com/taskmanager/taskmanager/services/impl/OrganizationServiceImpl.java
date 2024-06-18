@@ -15,6 +15,7 @@ import com.taskmanager.taskmanager.services.OrganizationService;
 import com.taskmanager.taskmanager.utill.RequestContextHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final UserOrganizationTableRepository userOrganizationTableRepository;
     private final RequestContextHolder contextHolder;
     private final AuthenticationService authenticationService;
+
+    public OrganizationServiceImpl(
+            OrganizationRepository organizationRepository,
+            UserOrganizationTableRepository userOrganizationTableRepository,
+            RequestContextHolder contextHolder,
+            @Lazy AuthenticationService authenticationService
+    ) {
+        this.organizationRepository = organizationRepository;
+        this.userOrganizationTableRepository = userOrganizationTableRepository;
+        this.contextHolder = contextHolder;
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     @Transactional()
@@ -83,6 +95,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public boolean checkIfUserHaveAccessToThisOrganization(UserEntity currentUser, OrganizationEntity currentOrganization) {
+        return false;
+    }
+
+    @Override
+    public boolean addSelfToOrganizationAsAdmin(OrganizationEntity organization) {
         return false;
     }
 }

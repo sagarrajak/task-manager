@@ -6,11 +6,13 @@ import com.taskmanager.taskmanager.dto.request.SignupRequestDto;
 import com.taskmanager.taskmanager.dto.response.JwtAuthenticationResponse;
 import com.taskmanager.taskmanager.dto.response.SignupResponse;
 import com.taskmanager.taskmanager.entity.UserEntity;
+import com.taskmanager.taskmanager.exception.authentication.LoginException;
 import com.taskmanager.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,7 @@ public class AuthenticationService {
     }
 
     public JwtAuthenticationResponse login(LoginRequestDto dto) {
-        var user = this.userRepository.findByEmailIgnoreCase(dto.getUsername()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password!"));
+        var user = this.userRepository.findOneByEmailIgnoreCase(dto.getUsername()).orElseThrow(() -> new LoginException("Invalid email or password!"));
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, dto.getPassword()));
         var jwt = jwtService.generateToken(user.getUsername());
         return JwtAuthenticationResponse.builder().token(jwt).build();

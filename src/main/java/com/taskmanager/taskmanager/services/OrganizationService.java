@@ -30,4 +30,6 @@ public interface OrganizationService {
     public boolean removeUserFromOrganization(OrganizationEntity organization);
 
     public boolean checkIfUserHaveAccessToThisOrganization(UserEntity currentUser, OrganizationEntity currentOrganization);
+
+    public boolean addSelfToOrganizationAsAdmin(OrganizationEntity organization);
 }
