@@ -27,8 +27,6 @@ public class BoardEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     String name;
 
-
-
     @Column(name = "description")
     String description;
 
@@ -50,5 +48,5 @@ public class BoardEntity extends BaseEntity {
             cascade = CascadeType.ALL,
             mappedBy = "boardId"
     )
-    private Set<StepsEntity> boards;
+    private Set<StepsEntity> steps;
 }

@@ -15,8 +15,6 @@ public interface OrganizationService {
 
     public OrganizationDetailsResponseDto addUserToOrganization(String email);
 
-    @Transactional()
-    boolean addUserToOrganization(String email, OrganizationEntity organization);
 
     @Transactional()
     boolean addUserToOrganization(UserEntity user, OrganizationEntity organization);

@@ -91,12 +91,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    @Transactional()
-    public boolean addUserToOrganization(String email, OrganizationEntity organization) {
-        return false;
-    }
-
-    @Override
     public boolean removeUserFromOrganization(OrganizationEntity organization) {
         return false;
     }

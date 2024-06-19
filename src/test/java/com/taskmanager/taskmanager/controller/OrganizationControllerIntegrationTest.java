@@ -16,7 +16,7 @@ import org.springframework.http.*;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class OrganizationControllerTest {
+class OrganizationControllerIntegrationTest {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
 
