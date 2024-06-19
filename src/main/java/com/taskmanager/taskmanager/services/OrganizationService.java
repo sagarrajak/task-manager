@@ -13,7 +13,7 @@ public interface OrganizationService {
 
     public Optional<OrganizationEntity> checkIfOrganizationExist(String nameOfOrg);
 
-    public boolean addUserToOrganization(String email);
+    public OrganizationDetailsResponseDto addUserToOrganization(String email);
 
     @Transactional()
     boolean addUserToOrganization(String email, OrganizationEntity organization);
@@ -28,4 +28,6 @@ public interface OrganizationService {
     public boolean addSelfToOrganizationAsAdmin(OrganizationEntity organization);
 
     public OrganizationDetailsResponseDto getAllDetailsOfOrganization(String organizationId);
+
+    public OrganizationDetailsResponseDto getAllDetailsOfOrganization(OrganizationEntity organization);
 }

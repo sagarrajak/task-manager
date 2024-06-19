@@ -10,6 +10,7 @@ import com.taskmanager.taskmanager.entity.*;
 import com.taskmanager.taskmanager.exception.OrganizationException;
 import com.taskmanager.taskmanager.repository.OrganizationRepository;
 import com.taskmanager.taskmanager.repository.UserOrganizationTableRepository;
+import com.taskmanager.taskmanager.repository.UserRepository;
 import com.taskmanager.taskmanager.services.OrganizationService;
 import com.taskmanager.taskmanager.utill.RequestContextHolder;
 import jakarta.persistence.EntityManager;
@@ -30,18 +31,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final AuthenticationService authenticationService;
     private final EntityManager entityManager;
 
+    private final UserRepository userRepository;
+
     public OrganizationServiceImpl(
             OrganizationRepository organizationRepository,
             UserOrganizationTableRepository userOrganizationTableRepository,
             RequestContextHolder contextHolder,
             @Lazy AuthenticationService authenticationService,
-            EntityManager entityManager
+            EntityManager entityManager, UserRepository userRepository
     ) {
         this.organizationRepository = organizationRepository;
         this.userOrganizationTableRepository = userOrganizationTableRepository;
         this.contextHolder = contextHolder;
         this.authenticationService = authenticationService;
         this.entityManager = entityManager;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -63,13 +67,15 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional
-    @RequireOrganizationMethod()
-    public boolean addUserToOrganization(String email) {
+    public OrganizationDetailsResponseDto addUserToOrganization(String email) {
         OrganizationEntity organization = (OrganizationEntity) contextHolder.get("organization");
         boolean isUserAlreadyExist = this.userOrganizationTableRepository.checkIfUserAlreadyExistInOrg(
-                organization.getOrgId(), authenticationService.getCurrentLoginUser().getEmail());
+                organization.getOrgId(), email);
+        Optional<UserEntity> userToAdd = this.userRepository.findOneByEmailIgnoreCase(email);
+        userToAdd.orElseThrow(() -> new OrganizationException("No user found with given email", HttpStatus.NOT_FOUND));
         if (!isUserAlreadyExist) {
-           return this.addUserToOrganization(authenticationService.getCurrentLoginUser(), organization);
+            this.addUserToOrganization(userToAdd.get(), organization);
+            return this.getAllDetailsOfOrganization(organization);
         }
         throw new OrganizationException("User already added in organization!", HttpStatus.BAD_REQUEST);
     }
@@ -114,7 +120,19 @@ public class OrganizationServiceImpl implements OrganizationService {
                 this.organizationRepository.findOneByOrgIdIgnoreCase(organizationId).get();
         List<UserEntity> userOfGivenOrg = this.userOrganizationTableRepository.findUserOfGivenOrg(organizationId);
         List<UserResponse> userResponsesDto = userOfGivenOrg.stream().map(UserMapper.INSTANCE::userToUserResponse).collect(Collectors.toList());
-        System.out.println(1);
+        return OrganizationDetailsResponseDto
+                .builder()
+                .orgId(organization.getOrgId())
+                .users(userResponsesDto)
+                .description(organization.getDescription())
+                .name(organization.getName())
+                .build();
+    }
+
+    @Override
+    public OrganizationDetailsResponseDto getAllDetailsOfOrganization(OrganizationEntity organization) {
+        List<UserEntity> userOfGivenOrg = this.userOrganizationTableRepository.findUserOfGivenOrg(organization.getOrgId());
+        List<UserResponse> userResponsesDto = userOfGivenOrg.stream().map(UserMapper.INSTANCE::userToUserResponse).collect(Collectors.toList());
         return OrganizationDetailsResponseDto
                 .builder()
                 .orgId(organization.getOrgId())

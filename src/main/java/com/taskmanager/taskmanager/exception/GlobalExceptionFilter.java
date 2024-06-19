@@ -7,7 +7,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-//@ControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionFilter {
 
     @ExceptionHandler(OrganizationException.class)

@@ -1,8 +1,10 @@
 package com.taskmanager.taskmanager.controller;
 
+import com.taskmanager.taskmanager.annotation.RequireOrganizationMethod;
 import com.taskmanager.taskmanager.dto.mapstruct.OrganizationMapper;
 import com.taskmanager.taskmanager.dto.request.CrateOrganizationRequestDto;
-import com.taskmanager.taskmanager.dto.response.organization.AddUserOrganizationRequestDto;
+import com.taskmanager.taskmanager.dto.request.organization.AddUserOrganizationRequestDto;
+import com.taskmanager.taskmanager.dto.response.GeneralResponseWithMessage;
 import com.taskmanager.taskmanager.dto.response.organization.CreateOrganizationResponseDto;
 import com.taskmanager.taskmanager.dto.response.organization.OrganizationDetailsResponseDto;
 import com.taskmanager.taskmanager.entity.OrganizationEntity;
@@ -35,9 +37,11 @@ public class OrganizationController {
         return new ResponseEntity<>(createOrganizationResponseDto, HttpStatus.CREATED);
     }
 
-    @PostMapping("/addUser")
-    public ResponseEntity<Boolean> addUserOrganization(AddUserOrganizationRequestDto dto) {
-        return null;
+    @PostMapping("/add-user")
+    @RequireOrganizationMethod()
+    public ResponseEntity<GeneralResponseWithMessage<OrganizationDetailsResponseDto>> addUserOrganization(@RequestBody @Valid AddUserOrganizationRequestDto dto) {
+        OrganizationDetailsResponseDto organizationDetailsResponseDto = this.organizationService.addUserToOrganization(dto.getEmail());
+        return new ResponseEntity<>(GeneralResponseWithMessage.of(organizationDetailsResponseDto, "User added successfully"), HttpStatus.OK);
     }
 
 }

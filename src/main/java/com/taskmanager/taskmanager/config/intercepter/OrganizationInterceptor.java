@@ -37,7 +37,7 @@ public class OrganizationInterceptor implements HandlerInterceptor {
             if (methodAnnotation != null) {
                 OrganizationEntity organization = (OrganizationEntity) contextHolder.get("organization");
                 if (organization == null) {
-                    throw new AuthenticationException("Please provide organization name");
+                    throw new AuthenticationException("Please provide organization name header");
                 }
             }
         }
